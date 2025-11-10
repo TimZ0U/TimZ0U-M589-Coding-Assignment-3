@@ -15,13 +15,10 @@ function [A,b,meta] = build_design(y, s, N, K)
         error('Underdetermined: T-N (= %d) must exceed p (= %d).', M, p);
     end
 
-    % response
     b = y(N+1:T);
 
-    % time index 
     t = (N+1:T).';
 
-    % design matrix
     A = zeros(M, p);
     col = 1;
 
