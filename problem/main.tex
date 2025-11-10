@@ -1,0 +1,21 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{hyperref}
+\usepackage{microtype}
+\usepackage{enumitem}
+\setlist{itemsep=0.25em}
+% Minimal 'problem' environment for article class
+\newenvironment{problem}[1][]%
+{\par\medskip
+  \noindent\begingroup\bfseries Problem.\if\relax\detokenize{#1}\relax\else\ (#1)\fi\endgroup\ }%
+{\par\medskip}
+\begin{document}
+\begin{center}
+  {\Large Seasonal Difference-Equation (QR-only)}\\[0.25em]
+  {\normalsize Best $N$th-Order with Trigonometric Seasonality}\\[0.25em]
+  \rule{0.9\linewidth}{0.4pt}
+\end{center}
+\input{problem.tex}
+\end{document}
+

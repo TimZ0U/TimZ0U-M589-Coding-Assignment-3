@@ -1,0 +1,126 @@
+\begin{problem}[Best $N$th-Order Difference Equation with Seasonal Component and Linear Trend]
+You are given a scalar monthly time series $y_1, y_2, \dots, y_T$.
+We wish to describe and predict this sequence by an $N$th-order
+linear difference equation augmented with a trigonometric seasonal component.
+
+\medskip
+For integer orders $N \ge 0$ and $K \ge 0$, consider the model
+\[
+y_t \approx
+c + d\,t
++ \sum_{i=1}^{N} a_i\,y_{t-i}
++ \sum_{k=1}^{K} \!\Big(
+  \alpha_k \cos\!\tfrac{2\pi k t}{s}
+  + \beta_k \sin\!\tfrac{2\pi k t}{s}
+\Big),
+\qquad t = N+1, \dots, T,
+\]
+where $s=12$ denotes the seasonal period (months) and
+$\beta = [\,c,\;\,d,\;a_1,\dots,a_N,\;\alpha_1,\dots,\alpha_K,\;\beta_1,\dots,\beta_K\,]^\top$
+is a vector of unknown coefficients.
+
+\medskip
+\textbf{(a) Formulation as least squares.}
+Construct the response vector $b\in\mathbb{R}^{T-N}$ and the design matrix
+$A\in\mathbb{R}^{(T-N)\times(2+N+2K)}$:
+\[
+b =
+\begin{bmatrix}
+y_{N+1}\\
+y_{N+2}\\
+\vdots\\
+y_T
+\end{bmatrix},
+\qquad
+A_t =
+\big[
+1,\;
+t,\;
+y_{t-1},\dots,y_{t-N},\;
+\cos\tfrac{2\pi t}{s},\dots,\cos\tfrac{2\pi K t}{s},\;
+\sin\tfrac{2\pi t}{s},\dots,\sin\tfrac{2\pi K t}{s}
+\big].
+\]
+Estimate the coefficient vector $\beta$ by solving the least--squares problem
+\[
+\min_{\beta}\,\|A\beta - b\|_2,
+\]
+\emph{using only a dense QR factorization that you implement yourself}
+(e.g.\ via Householder reflectors).
+Compute residuals $r=A\hat\beta - b$ and
+$\mathrm{RSS} = \|r\|_2^2$.
+
+\medskip
+\textbf{(b) Model order selection.}
+Repeat the fit for several values of $(N,K)$ in user--chosen ranges,
+for example $N=0,\dots,N_{\max}$ and $K=0,\dots,K_{\max}$.
+For each pair $(N,K)$, evaluate a fit score such as
+\[
+S(N,K) =
+M\log\!\Bigl(\tfrac{\mathrm{RSS}}{M}\Bigr)
++ p\,\log M,
+\qquad
+M=T-N,\quad
+p = 2 + N + 2K,
+\]
+(the Bayesian Information Criterion).
+Select $(N^\star,K^\star)$ minimizing $S(N,K)$.
+
+\medskip
+\textbf{(c) Prediction.}
+With $(N^\star,K^\star)$ and $\hat\beta$ fixed,
+compute one--step predictions for
+$t=N^\star+1,\dots,T$:
+\[
+\widehat y_{t\mid t-1}
+= \hat c
+  + \hat d \, t
+  + \sum_{i=1}^{N^\star}\hat a_i\,y_{t-i}
+  + \sum_{k=1}^{K^\star}
+      \big(
+        \hat\alpha_k \cos\tfrac{2\pi k t}{s}
+        + \hat\beta_k \sin\tfrac{2\pi k t}{s}
+      \big).
+\]
+For forecasting $h$ steps ahead $(h=1,2,\dots)$, apply the same equation recursively,
+replacing any $y_{t-i}$ with its forecast if $t-i>T$.
+The trigonometric terms are deterministic functions of~$t$.
+
+\medskip
+\textbf{(d) Deliverables.}
+\begin{itemize}
+  \item A plot or table of $S(N,K)$ over your search grid, and the selected
+        $(N^\star,K^\star)$.
+  \item Estimated coefficients
+        $\hat c$, $\hat a_1,\dots,\hat a_{N^\star}$,
+        $\hat\alpha_1,\dots,\hat\alpha_{K^\star}$,
+        $\hat\beta_1,\dots,\hat\beta_{K^\star}$.
+  \item The in--sample mean--squared prediction error
+        $\frac{1}{T-N^\star}\sum (y_t-\widehat y_{t\mid t-1})^2$.
+  \item Twelve--step forecasts
+        $\widehat y_{T+1},\dots,\widehat y_{T+12}$ and a plot of the data with forecasts.
+\end{itemize}
+
+\medskip
+\textbf{Notes.}
+\begin{itemize}
+  \item Only dense QR decomposition may be used for the least--squares solver.
+        No normal equations or built--in regression routines.
+  \item The integer $N$ controls the memory of the difference equation;
+        $K$ controls the number of seasonal harmonics.
+  \item The model may be viewed as an $N$th--order linear difference equation
+        with a trigonometric forcing term.
+        (Connections to AR or ARIMA models may be mentioned for reference,
+        but are not required.)
+\end{itemize}
+\end{problem}
+
+\medskip
+\textbf{Data Reference.}
+\begin{itemize}
+\item The Tucson and Phoenix data are \textbf{real} and come from:
+  \begin{center}
+    \url{https://zenodo.org/records/7826348}
+  \end{center}
+\item The dataset \textbf{y\_example.csv} is synthetic.
+\end{itemize}
